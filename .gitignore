@@ -4,3 +4,6 @@
 
 # Assignment files (PDFs)
 *.pdf
+
+# Token files
+token.mat
