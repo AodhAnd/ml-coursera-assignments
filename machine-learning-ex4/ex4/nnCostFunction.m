@@ -24,7 +24,6 @@ Theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):en
 
 % Setup some useful variables
 m = size(X, 1);
-         
 % You need to return the following variables correctly 
 J = 0;
 Theta1_grad = zeros(size(Theta1));
@@ -62,21 +61,77 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
+%-- PART 1 --%
+% Extending X with the bias unit
+X = [ones(m,1) X];
 
+% Computing the hidden layer results and adding its bias unit
+a2 = sigmoid(X * Theta1');
+a2 = [ones(size(a2,1),1) a2];
 
+% Computing the output (or activation) layer
+a3 = sigmoid(a2 * Theta2');
 
+% Creating binary (0,1) vectors back from the given y 
+% (containing values from 1 to 10)
+Y = zeros(m,num_labels);
+for i=1:m
+  Y(i,y(i,1)) = 1;
+end
 
+% Calculating cost for each output
+for k=1:num_labels
+  temp(k) = sum(-Y(:,k) .* log(a3(:,k)) - (ones(m,1) - Y(:,k)) .* log(ones(m,1) - a3(:,k)));
+end
 
+% Unregularized cost
+J = 1/m * sum(temp);
 
+regterm = lambda/(2*m) * (sum(sum(Theta1(:,2:end).^2)) + sum(sum(Theta2(:,2:end).^2)));
+J += regterm;
 
+clear a2,a3;
+%-- PART 2 --%
+Delta1 = zeros(input_layer_size+1,hidden_layer_size);
+Delta2 = zeros(hidden_layer_size+1,num_labels);
+% All vectors are kept as column vectors for ease of understanding
+for i=1:m
+  % Feedforward prop.
+  a1 = X(i,:)';
+  z2 = Theta1 * a1;
+  a2 = [1 sigmoid(z2)']';
+  z3 = Theta2 * a2;
+  a3 = sigmoid(z3);
 
+  % Output layer's delta
+  delta3 = a3 - Y(i,:)';
+  
+  % Hidden layer's delta
+  delta2 = Theta2' * delta3;
+  delta2 = delta2(2:end) .* sigmoidGradient(z2);
 
+  % Hidden layer's accumulated gradient
+  Delta2 = Delta2 + (delta3 * a2')';
+  % Input layer's accumulated gradient
+  Delta1 = Delta1 + (delta2 * a1')';
+end
 
+Theta2_grad = 1/m * Delta2';
+Theta2_grad(:,2:end) += lambda/m * Theta2(:,2:end);
 
+Theta1_grad = 1/m * Delta1';
+Theta1_grad(:,2:end) += lambda/m * Theta1(:,2:end);
 
+% disp('delta2');
+% disp(delta2);
+% disp('delta3');
+% disp(delta3);
+% disp('Delta1');
+% disp(Delta1');
+% disp('Delta2');
+% disp(Delta2');
 
-
-
+%-- PART 3 --%
 
 
 

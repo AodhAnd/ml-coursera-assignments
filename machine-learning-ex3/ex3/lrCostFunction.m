@@ -37,11 +37,14 @@ grad = zeros(size(theta));
 %
 
 g = sigmoid(theta' * X');
+
+% Cost
 genterm1 = (-y .* log(g') - (ones(m,1) - y) .* log(ones(m,1) - g'));
 genterm2 = theta(2:end).^2;
 
 J = 1/m * (sum(genterm1) + lambda/2 * sum(genterm2));
 
+% Gradient
 err = g' - y; % (h(x) - y)
 grad = 1/m * (X' * err); % d/d(theta) [J(theta)]
 temp = lambda * theta(2:end); % lambda * theta
