@@ -7,3 +7,7 @@
 
 # Token files
 token.mat
+
+# Sublime files
+*.sublime-project
+*.sublime-workspace
