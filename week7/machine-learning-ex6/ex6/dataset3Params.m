@@ -22,9 +22,27 @@ sigma = 0.3;
 %  Note: You can compute the prediction error using 
 %        mean(double(predictions ~= yval))
 %
+C_list = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30];
+sigma_list = [0.01, 0.03, 0.1, 0.3, 1, 3, 10, 30];
 
+predictions = zeros(size(yval));
+% The best error at the beginning is the worst possible.
+% Thus, it can only improve.
+best_err = 1.0;
 
-
+% For each parameter combination
+for Ci = C_list
+    for sigmaj = sigma_list
+        model = svmTrain(X, y, Ci, @(x1, x2) gaussianKernel(x1, x2, sigmaj));
+        predictions = svmPredict(model, Xval);
+        % If the prediction is better, parameters (Ci, sigmaj) are kept
+        if mean(double(predictions ~= yval)) < best_err
+            best_err = mean(double(predictions ~= yval));
+            C = Ci;
+            sigma = sigmaj;
+        endif
+    endfor
+endfor
 
 
 

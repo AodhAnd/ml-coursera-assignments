@@ -11,3 +11,6 @@ token.mat
 # Sublime files
 *.sublime-project
 *.sublime-workspace
+
+# Octave workspace
+octave-workspace
